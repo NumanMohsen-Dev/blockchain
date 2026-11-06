@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+*/node_modules/
+package-lock.json
+
+# Hardhat build artifacts & cache
+blockchain/artifacts/
+blockchain/cache/
+
+# Python / FastAPI
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment and secrets
+.env
+*.env
+!.env.example
+
+# Local storage and databases
+*.db
+*.sqlite
+*.sqlite3
+storage/evidence/*
+!storage/evidence/.gitkeep
+backend/storage/evidence/*
+!backend/storage/evidence/.gitkeep
+
+# Operating System files
+.DS_Store
+Thumbs.db

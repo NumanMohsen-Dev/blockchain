@@ -1,0 +1,20 @@
+{
+  "name": "evidence-chain-of-custody-blockchain",
+  "version": "1.0.0",
+  "description": "Smart contracts and local Hardhat network for Digital Evidence Chain-of-Custody",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy": "hardhat run scripts/deploy.js"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.18"
+  },
+  "dependencies": {
+    "fp-ts": "^2.16.11"
+  }
+}

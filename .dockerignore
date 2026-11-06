@@ -1,0 +1,13 @@
+node_modules
+.git
+.gitignore
+.env
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+storage/evidence/*
+artifacts
+cache
+deployments
+
