@@ -10,8 +10,13 @@ from app.db.session import get_db
 from app.models.evidence import EvidenceCategory, RegistrationStatus
 from app.models.user import User, UserRole
 from app.schemas.evidence import (
+    CustodyHistoryItem,
+    CustodyTransferRequest,
+    CustodyTransferResponse,
     EvidenceListResponse,
     EvidenceResponse,
+    IntegrityCheckResponse,
+    IntegrityVerificationResult,
     TransactionResponse,
 )
 from app.services.audit_service import AuditService
@@ -166,6 +171,71 @@ def download_evidence(
     )
 
 
+@router.post("/{evidence_id}/transfer", response_model=CustodyTransferResponse)
+def transfer_custody(
+    evidence_id: str,
+    transfer_data: CustodyTransferRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Transfers custody of the specified evidence:
+    - Enforces that requester is current custodian or system Administrator.
+    - Submits transferCustody transaction to smart contract.
+    - Waits for mined transaction receipt.
+    - Updates cached database custodian reference and records transaction.
+    """
+    result = EvidenceService.transfer_custody(
+        db=db,
+        evidence_id=evidence_id,
+        new_custodian_id=transfer_data.new_custodian_id,
+        reason=transfer_data.reason,
+        current_user=current_user,
+    )
+    return CustodyTransferResponse(**result)
+
+
+@router.get("/{evidence_id}/history", response_model=List[CustodyHistoryItem])
+def get_custody_history(
+    evidence_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Retrieves the authoritative, immutable chronological chain-of-custody transfer history
+    directly from the smart contract on the blockchain.
+    """
+    return EvidenceService.get_custody_history(db, evidence_id)
+
+
+@router.post("/{evidence_id}/verify", response_model=IntegrityVerificationResult)
+def verify_integrity(
+    evidence_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Performs real-time cryptographic integrity verification:
+    - Calculates the current SHA-256 hash of the stored file on disk.
+    - Compares against the immutable registered hash on the blockchain.
+    - Confirms cryptographic match or raises integrity tampering warning.
+    - Persists verification check record in database.
+    """
+    result = EvidenceService.verify_evidence_integrity(db, evidence_id, current_user)
+    return IntegrityVerificationResult(**result)
+
+
+@router.get("/{evidence_id}/integrity-checks", response_model=List[IntegrityCheckResponse])
+def get_integrity_checks(
+    evidence_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Retrieves all historical integrity checks performed for this evidence."""
+    checks = EvidenceService.get_integrity_checks(db, evidence_id)
+    return [IntegrityCheckResponse.model_validate(c) for c in checks]
+
+
 @router.get("/{evidence_id}/transactions", response_model=List[TransactionResponse])
 def get_evidence_transactions(
     evidence_id: str,
@@ -182,4 +252,3 @@ def get_evidence_transactions(
 
     transactions = EvidenceService.get_evidence_transactions(db, evidence_id)
     return [TransactionResponse.model_validate(tx) for tx in transactions]
-
