@@ -128,6 +128,31 @@ def collector_token(client, test_collector_user):
 
 
 @pytest.fixture
+def test_investigator_user(db):
+    investigator = User(
+        full_name="Detective Miller (Investigator)",
+        email="test_investigator@evidence.org",
+        password_hash=get_password_hash("InvestigatorPass123!"),
+        role=UserRole.INVESTIGATOR,
+        blockchain_address="0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        is_active=True,
+    )
+    db.add(investigator)
+    db.commit()
+    db.refresh(investigator)
+    return investigator
+
+
+@pytest.fixture
+def investigator_token(client, test_investigator_user):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": test_investigator_user.email, "password": "InvestigatorPass123!"},
+    )
+    return resp.json()["access_token"]
+
+
+@pytest.fixture
 def test_court_user(db):
     court = User(
         full_name="Judge Court Reviewer",

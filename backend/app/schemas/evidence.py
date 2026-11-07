@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from app.models.evidence import EvidenceCategory, RegistrationStatus
+from app.models.integrity_check import IntegrityResult
 from app.models.transaction import TransactionStatus, TransactionType
 from app.schemas.user import UserResponse
 
@@ -81,15 +82,38 @@ class CustodyTransferRequest(BaseModel):
     reason: str = Field(..., min_length=3, max_length=500)
 
 
+class CustodyTransferResponse(BaseModel):
+    evidence_id: str
+    previous_custodian_id: int
+    previous_custodian: Optional[UserResponse] = None
+    new_custodian_id: int
+    new_custodian: Optional[UserResponse] = None
+    reason: str
+    transaction_hash: str
+    block_number: Optional[int] = None
+    transferred_at: datetime
+
+
 class IntegrityCheckResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     evidence_id: str
     performed_by: int
-    performed_by_name: Optional[str] = None
+    checker: Optional[UserResponse] = None
     calculated_hash: str
     blockchain_hash: str
-    result: str  # "MATCH" or "MISMATCH"
+    result: IntegrityResult
     checked_at: datetime
 
+
+class IntegrityVerificationResult(BaseModel):
+    evidence_id: str
+    status: str  # "INTEGRITY_VERIFIED", "INTEGRITY_WARNING", "FILE_UNAVAILABLE"
+    is_valid: bool
+    calculated_sha256: str
+    blockchain_sha256: str
+    match: bool
+    performed_by: Optional[UserResponse] = None
+    checked_at: datetime
+    message: str
