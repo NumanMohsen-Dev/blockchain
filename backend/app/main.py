@@ -86,6 +86,7 @@ app.include_router(blockchain.router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/health", tags=["Health"])
+@app.get(f"{settings.API_V1_PREFIX}/health", tags=["Health"])
 def health_check():
     """Simple healthcheck endpoint for Docker container orchestration."""
     return {

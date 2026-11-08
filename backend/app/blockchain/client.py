@@ -28,6 +28,7 @@ class BlockchainClient:
         # Look in known contract_info.json paths
         potential_paths = [
             Path(settings.CONTRACT_ABI_PATH),
+            Path("/app/deployments/contract_info.json"),
             Path(__file__).parent / "contract_info.json",
             Path(__file__).parent.parent.parent.parent / "blockchain" / "deployments" / "contract_info.json",
         ]
