@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 from app.api.deps import get_current_user, get_token
 from app.core.config import settings
@@ -15,13 +15,32 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Authenticates user with email and password, returning JWT access token."""
-    user = UserService.get_by_email(db, login_data.email)
-    if not user:
-        raise UnauthorizedException("Invalid email or password")
+async def login(request: Request, db: Session = Depends(get_db)):
+    """Authenticates user with email/username and password via JSON or Form-data."""
+    content_type = request.headers.get("content-type", "")
+    email = None
+    password = None
 
-    if not verify_password(login_data.password, user.password_hash):
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            email = body.get("email") or body.get("username")
+            password = body.get("password")
+        except Exception:
+            raise UnauthorizedException("Invalid JSON request body")
+    else:
+        try:
+            form = await request.form()
+            email = form.get("email") or form.get("username")
+            password = form.get("password")
+        except Exception:
+            raise UnauthorizedException("Invalid form request")
+
+    if not email or not password:
+        raise UnauthorizedException("Email and password are required")
+
+    user = UserService.get_by_email(db, str(email).strip().lower())
+    if not user or not verify_password(str(password), user.password_hash):
         raise UnauthorizedException("Invalid email or password")
 
     if not user.is_active:

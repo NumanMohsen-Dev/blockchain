@@ -9,35 +9,35 @@ DEMO_USERS = [
     {
         "full_name": "System Administrator",
         "email": "admin@evidence.org",
-        "password": "Password123!",
+        "password": "EvidencePass123!",
         "role": UserRole.ADMIN,
         "blockchain_address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     },
     {
         "full_name": "Officer Sarah (Collector)",
         "email": "collector@evidence.org",
-        "password": "Password123!",
+        "password": "EvidencePass123!",
         "role": UserRole.EVIDENCE_COLLECTOR,
         "blockchain_address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     },
     {
         "full_name": "Detective Miller (Investigator)",
         "email": "investigator@evidence.org",
-        "password": "Password123!",
+        "password": "EvidencePass123!",
         "role": UserRole.INVESTIGATOR,
         "blockchain_address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     },
     {
         "full_name": "Dr. Alex Chen (Forensic Analyst)",
         "email": "analyst@evidence.org",
-        "password": "Password123!",
+        "password": "EvidencePass123!",
         "role": UserRole.FORENSIC_ANALYST,
         "blockchain_address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
     },
     {
         "full_name": "Hon. Justice Davis (Court Reviewer)",
         "email": "court@evidence.org",
-        "password": "Password123!",
+        "password": "EvidencePass123!",
         "role": UserRole.COURT_REVIEWER,
         "blockchain_address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
     },
@@ -63,6 +63,10 @@ def seed_demo_users(db: Session) -> None:
             db.add(new_user)
             created_count += 1
             logger.info(f"Seeded demo account: {user_info['email']} ({user_info['role'].value})")
+        else:
+            existing.password_hash = get_password_hash(user_info["password"])
+            existing.is_active = True
+            logger.info(f"Refreshed credentials for demo account: {user_info['email']}")
 
     db.commit()
     logger.info(f"Seeding completed. {created_count} accounts created.")

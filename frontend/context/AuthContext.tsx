@@ -9,7 +9,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (formData: FormData) => Promise<void>;
+  login: (payload: { email?: string; username?: string; password: string } | FormData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   isAdmin: boolean;
@@ -66,10 +66,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  const login = async (formData: FormData) => {
+  const login = async (
+    payload: { email?: string; username?: string; password: string } | FormData
+  ) => {
     setIsLoading(true);
     try {
-      const res = await api.login(formData);
+      const res = await api.login(payload);
       setUser(res.user);
       setAuthToken(res.access_token);
     } finally {

@@ -20,11 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("username", email.trim());
-      formData.append("password", password);
-
-      await login(formData);
+      await login({ email: email.trim(), password });
       router.push("/dashboard");
     } catch (err: any) {
       setError(err?.message || "Invalid credentials or inactive account.");

@@ -97,10 +97,23 @@ async function request<T>(
 
 export const api = {
   // Auth
-  async login(formData: FormData): Promise<{ access_token: string; token_type: string; user: User }> {
+  async login(
+    payload: { email?: string; username?: string; password: string } | FormData
+  ): Promise<{ access_token: string; token_type: string; user: User }> {
+    let body: any;
+    const headers: Record<string, string> = {};
+
+    if (payload instanceof FormData) {
+      body = payload;
+    } else {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify(payload);
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
-      body: formData,
+      headers,
+      body,
     });
     const data = await response.json();
     if (!response.ok) {
