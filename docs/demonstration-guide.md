@@ -159,3 +159,4 @@ This demonstrates why the blockchain architecture is essential. Show what happen
 
 **Q: Why use a relayer for transactions?**  
 *A: Forensic officers in the field should not need to manage individual cryptocurrency balances for gas fees. The backend acts as a trusted relayer that signs transactions, while the smart contract explicitly records and enforces the officer's designated Ethereum address as the custodian.*
+

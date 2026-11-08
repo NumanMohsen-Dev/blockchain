@@ -242,3 +242,4 @@ The smart contract [`blockchain/contracts/EvidenceChainOfCustody.sol`](file:///c
 | **Path Traversal** | Malicious filename such as `../../etc/passwd` | Filenames on disk are generated as random UUIDs; original filenames are stored solely as descriptive metadata. |
 | **Privilege Escalation** | Regular officer creates admin account | User creation and role reassignment endpoints are restricted strictly to the `ADMIN` role. |
 | **Denial of Service** | Oversized file upload exhausting disk | Streaming upload validates content size against `MAX_UPLOAD_SIZE_BYTES` (100 MB default) and aborts if exceeded. |
+

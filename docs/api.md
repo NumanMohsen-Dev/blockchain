@@ -243,3 +243,4 @@ Returns the operational connectivity of the Hardhat node and smart contract acce
     "active_users": 5
   }
   ```
+
